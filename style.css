@@ -226,7 +226,7 @@ h1 {
 
 /* Highlight Today */
 .calendar .today {
-    background-color: #ffcc00; /* Yellow for today */
+    background-color: #add8e6; /* Yellow for today */
     font-weight: bold;
 }
 
@@ -276,7 +276,7 @@ h1 {
 .toggle-achieved-btn {
     background: none;
     border: none;
-    color: #333;
+    color: #007bff;
     cursor: pointer;
     transition: color 0.2s ease, transform 0.2s ease;
     width: 150px; /* Fixed width */
@@ -319,6 +319,38 @@ h1 {
     color: #555;
 }
 
+/* Weekly Indicators Container */
+.weekly-indicators-container {
+    margin-top: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.weekly-indicators-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.weekly-indicators-container th,
+.weekly-indicators-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.weekly-indicators-container th {
+    background-color: #007bff;
+    color: white;
+}
+
+.weekly-indicators-container td {
+    background-color: #f9f9f9;
+}
+
 /* Clickable Title */
 #goalListToggle {
     margin-bottom: 10px;
@@ -341,7 +373,8 @@ h1 {
 @media (max-width: 600px) {
     .calendar-container,
     .habit-list-container,
-    .goal-list-container {
+    .goal-list-container,
+    .weekly-indicators-container {
         max-width: 100%;
         padding: 10px;
     }

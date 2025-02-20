@@ -1,5 +1,6 @@
 const habits = JSON.parse(localStorage.getItem('habits')) || [];
 const goals = JSON.parse(localStorage.getItem('goals')) || [];
+const weeklyResults = JSON.parse(localStorage.getItem('weeklyResults')) || [];
 let currentMonth = new Date().getMonth(); // Start with the current month
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     displayHabits();
     displayGoals();
     generateCalendar(currentMonth);
+    displayWeeklyIndicators();
 
     // Existing event listeners
     document.getElementById('prevMonthBtn').addEventListener('click', showPreviousMonth);
@@ -24,12 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // New toggle event listener on the heading
     document.getElementById('habitListToggle').addEventListener('click', toggleHabitList);
     document.getElementById('goalListToggle').addEventListener('click', toggleGoalList);
+
+    // Check and reset weekly goals if needed
+    checkAndResetWeeklyGoals();
 });
 
 function generateCalendar(month) {
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
+    const today = new Date();
 
     const calendar = document.getElementById('calendar');
     calendar.innerHTML = ''; // Clear existing calendar
@@ -66,6 +72,10 @@ function generateCalendar(month) {
             habitStatus = 'done';
         }
 
+        if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day) {
+            dayButton.classList.add('today'); // Highlight the current day
+        }
+
         dayButton.classList.add(habitStatus);
         dayButton.addEventListener('click', () => toggleDayCompletion(day, month, year)); // Attach click event
         calendar.appendChild(dayButton);
@@ -81,6 +91,7 @@ function showPreviousMonth() {
         currentMonth = 11; // Loop back to December
     }
     generateCalendar(currentMonth);
+    displayWeeklyIndicators();
 }
 
 function showNextMonth() {
@@ -90,6 +101,7 @@ function showNextMonth() {
         currentMonth = 0; // Loop back to January
     }
     generateCalendar(currentMonth);
+    displayWeeklyIndicators();
 }
 
 function addHabit() {
@@ -197,11 +209,13 @@ function addGoal() {
     if (goalName) {
         const newGoal = {
             name: goalName,
-            achieved: false // Initially not achieved
+            achieved: false, // Initially not achieved
+            date: new Date().toISOString() // Set the current date
         };
         goals.push(newGoal);
         localStorage.setItem('goals', JSON.stringify(goals));
         displayGoals();
+        displayWeeklyIndicators();
     }
 }
 
@@ -246,6 +260,7 @@ function deleteGoal(index) {
     goals.splice(index, 1);
     localStorage.setItem('goals', JSON.stringify(goals));
     displayGoals();
+    displayWeeklyIndicators();
 }
 
 function handleGoalClick(event) {
@@ -267,6 +282,7 @@ function toggleGoalAchieved(index) {
     goals[index].achieved = !goals[index].achieved;
     localStorage.setItem('goals', JSON.stringify(goals));
     displayGoals();
+    displayWeeklyIndicators();
 }
 
 function toggleGoalList() {
@@ -279,6 +295,90 @@ function toggleGoalList() {
     } else {
         goalList.style.display = 'none';
         toggleHeading.textContent = 'Your Goals';
+    }
+}
+
+function displayWeeklyIndicators() {
+    const weeklyIndicatorsTable = document.getElementById('weeklyIndicators');
+    const weeks = getThreeWeeks();
+    const goalsAchievedPerWeek = calculateGoalsAchievedPerWeek(weeks);
+
+    weeklyIndicatorsTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>Week</th>
+                <th>Goals Achieved / Total Goals</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${goalsAchievedPerWeek.map((weekData, index) => `
+                <tr>
+                    <td>${weekData.label}</td>
+                    <td>${weekData.achieved} / ${weekData.total}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+}
+
+function getThreeWeeks() {
+    const currentDate = new Date();
+    const currentWeek = getWeekDates(currentDate);
+    const pastWeek = getWeekDates(new Date(currentDate.setDate(currentDate.getDate() - 7)));
+    const nextWeek = getWeekDates(new Date(currentDate.setDate(currentDate.getDate() + 14)));
+
+    return [
+        { label: 'Past Week', dates: pastWeek },
+        { label: 'Current Week', dates: currentWeek },
+        { label: 'Next Week', dates: nextWeek }
+    ];
+}
+
+function getWeekDates(date) {
+    const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        weekDates.push(new Date(startOfWeek));
+        startOfWeek.setDate(startOfWeek.getDate() + 1);
+    }
+    return weekDates;
+}
+
+function calculateGoalsAchievedPerWeek(weeks) {
+    return weeks.map(week => {
+        const weekGoals = goals.filter(goal => {
+            const goalDate = new Date(goal.date);
+            return week.dates.some(date => date.toDateString() === goalDate.toDateString());
+        });
+        const achievedGoals = weekGoals.filter(goal => goal.achieved).length;
+        return {
+            label: week.label,
+            achieved: achievedGoals,
+            total: weekGoals.length
+        };
+    });
+}
+
+function checkAndResetWeeklyGoals() {
+    const lastResetDate = new Date(localStorage.getItem('lastResetDate'));
+    const currentDate = new Date();
+    const dayOfWeek = currentDate.getDay();
+
+    // If today is Sunday and the last reset was not today, reset the weekly goals
+    if (dayOfWeek === 0 && lastResetDate.toDateString() !== currentDate.toDateString()) {
+        // Record the results of the past week
+        const pastWeekResults = calculateGoalsAchievedPerWeek([{ label: 'Past Week', dates: getWeekDates(new Date(currentDate.setDate(currentDate.getDate() - 7))) }])[0];
+        weeklyResults.push(pastWeekResults);
+        localStorage.setItem('weeklyResults', JSON.stringify(weeklyResults));
+
+        // Reset the goals
+        goals.forEach(goal => {
+            goal.achieved = false;
+        });
+        localStorage.setItem('goals', JSON.stringify(goals));
+        localStorage.setItem('lastResetDate', currentDate.toISOString());
+        displayGoals();
+        displayWeeklyIndicators();
     }
 }
 
