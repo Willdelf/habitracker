@@ -1,35 +1,3 @@
-// Initialize habit list from local storage if available
-let habits = JSON.parse(localStorage.getItem('habits')) || [];
-
-document.getElementById('addHabitBtn').addEventListener('click', addHabit);
-
-function addHabit() {
-    let habitName = prompt('Enter the name of your new habit:');
-    if (habitName) {
-        let newHabit = {
-            name: habitName,
-            completedDates: []
-        };
-
-        // Add to habits array and save to local storage
-        habits.push(newHabit);
-        localStorage.setItem('habits', JSON.stringify(habits));
-        
-        displayHabits();
-    }
-}
-
-// Mark a habit as done for today
-function markAsDone(habitIndex) {
-    let today = new Date().toLocaleDateString();
-    if (!habits[habitIndex].completedDates.includes(today)) {
-        habits[habitIndex].completedDates.push(today);
-        localStorage.setItem('habits', JSON.stringify(habits));
-    }
-    displayHabits();
-}
-
-// Display all habits
 function displayHabits() {
     let habitList = document.querySelector('.habit-list');
     habitList.innerHTML = ''; // Clear existing list
@@ -52,6 +20,13 @@ function displayHabits() {
             markDoneButton.textContent = 'Completed';
         }
 
+        // Display reminder time if set
+        if (habit.reminderTime) {
+            let reminderText = document.createElement('span');
+            reminderText.textContent = `Reminder: ${habit.reminderTime}`;
+            habitItem.appendChild(reminderText);
+        }
+
         markDoneButton.onclick = () => markAsDone(index);
 
         habitItem.appendChild(habitText);
@@ -61,6 +36,4 @@ function displayHabits() {
     });
 }
 
-// Load and display habits when the page is ready
-displayHabits();
 
