@@ -1,5 +1,5 @@
 const habits = JSON.parse(localStorage.getItem('habits')) || [];
-let currentMonth = 0; // Starts from January
+let currentMonth = new Date().getMonth(); // Start with the current month
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = [
