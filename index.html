@@ -8,48 +8,52 @@
 </head>
 <body>
     <div class="app-container">
-        <h1>Habit Tracker</h1>
+        <header>
+            <h1>Habit Tracker</h1>
+        </header>
 
         <!-- Scripture Reminder -->
-        <div class="scripture-reminder">
+        <section class="scripture-reminder" aria-labelledby="scripture-heading">
+            <h2 id="scripture-heading">Scripture Reminder</h2>
             <p>Ahora bien, tal vez pienses que esto es locura de mi parte; mas he aquí, te digo que por medio de cosas pequeñas y sencillas se realizan grandes cosas; y en muchos casos, los pequeños medios confunden a los sabios. <em><b>Alma 37:6</b></em></p>
-        </div>
+        </section>
         
-        <div class="month-nav">
-            <button id="prevMonthBtn">Prev Month</button>
-            <span id="currentMonthDisplay">January 2025</span>
-            <button id="nextMonthBtn">Next Month</button>
-        </div>
+        <!-- Month Navigation -->
+        <nav class="month-nav" aria-label="Month Navigation">
+            <button id="prevMonthBtn" aria-label="Previous Month">Prev Month</button>
+            <span id="currentMonthDisplay" aria-live="polite">January 2025</span>
+            <button id="nextMonthBtn" aria-label="Next Month">Next Month</button>
+        </nav>
         
-        <div class="habit-list-container">
+        <!-- Habit List -->
+        <section class="habit-list-container" aria-labelledby="habitListToggle">
             <h2 id="habitListToggle">Your Habits</h2>
-            <ul id="habitList">
+            <ul id="habitList" aria-live="polite">
                 <!-- Habit items will go here -->
             </ul>
-        </div>
+            <button id="addHabitBtn">Add Habit</button>
+        </section>
 
-        <div class="calendar-container">
-            <h2>Calendar</h2>
-            <div id="calendar" class="calendar">
+        <!-- Calendar -->
+        <section class="calendar-container" aria-labelledby="calendar-heading">
+            <h2 id="calendar-heading">Calendar</h2>
+            <div id="calendar" class="calendar" aria-live="polite">
                 <!-- Calendar will be dynamically generated -->
             </div>
-        </div>
-
-        <button id="addHabitBtn">Add Habit</button>
+        </section>
 
         <!-- Goals Section -->
-        <div class="goal-list-container">
+        <section class="goal-list-container" aria-labelledby="goalListToggle">
             <h2 id="goalListToggle">Your Goals</h2>
-            <ul id="goalList">
+            <ul id="goalList" aria-live="polite">
                 <!-- Goal items will go here -->
             </ul>
-        </div>
-
-        <button id="addGoalBtn">Add Goal</button>
+            <button id="addGoalBtn">Add Goal</button>
+        </section>
 
         <!-- Weekly Key Indicators Section -->
-        <div class="weekly-indicators-container">
-            <h2>Weekly Key Indicators</h2>
+        <section class="weekly-indicators-container" aria-labelledby="weeklyIndicators-heading">
+            <h2 id="weeklyIndicators-heading">Weekly Key Indicators</h2>
             <table id="weeklyIndicators">
                 <thead>
                     <tr>
@@ -61,7 +65,7 @@
                     <!-- Weekly indicators will be dynamically generated -->
                 </tbody>
             </table>
-        </div>
+        </section>
     </div>
     <script src="script.js"></script>
 </body>

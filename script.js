@@ -1,35 +1,37 @@
 const habits = JSON.parse(localStorage.getItem('habits')) || [];
 const goals = JSON.parse(localStorage.getItem('goals')) || [];
 const weeklyResults = JSON.parse(localStorage.getItem('weeklyResults')) || [];
-let currentMonth = new Date().getMonth(); // Start with the current month
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
 ];
+let currentMonth = new Date().getMonth(); // Start with the current month
 
 document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+});
+
+function initializeApp() {
     displayHabits();
     displayGoals();
     generateCalendar(currentMonth);
     displayWeeklyIndicators();
+    addEventListeners();
+    checkAndResetWeeklyGoals();
+}
 
-    // Existing event listeners
+function addEventListeners() {
     document.getElementById('prevMonthBtn').addEventListener('click', showPreviousMonth);
     document.getElementById('nextMonthBtn').addEventListener('click', showNextMonth);
     document.getElementById('addHabitBtn').addEventListener('click', addHabit);
     document.getElementById('habitList').addEventListener('click', handleHabitClick);
     document.getElementById('addGoalBtn').addEventListener('click', addGoal);
     document.getElementById('goalList').addEventListener('click', handleGoalClick);
-
-    // New toggle event listener on the heading
     document.getElementById('habitListToggle').addEventListener('click', toggleHabitList);
     document.getElementById('goalListToggle').addEventListener('click', toggleGoalList);
-
-    // Check and reset weekly goals if needed
-    checkAndResetWeeklyGoals();
-});
+}
 
 function generateCalendar(month) {
     const firstDayOfMonth = new Date(year, month, 1);
@@ -85,21 +87,13 @@ function generateCalendar(month) {
 }
 
 function showPreviousMonth() {
-    if (currentMonth > 0) {
-        currentMonth--;
-    } else {
-        currentMonth = 11; // Loop back to December
-    }
+    currentMonth = (currentMonth > 0) ? currentMonth - 1 : 11; // Loop back to December
     generateCalendar(currentMonth);
     displayWeeklyIndicators();
 }
 
 function showNextMonth() {
-    if (currentMonth < 11) {
-        currentMonth++;
-    } else {
-        currentMonth = 0; // Loop back to January
-    }
+    currentMonth = (currentMonth < 11) ? currentMonth + 1 : 0; // Loop back to January
     generateCalendar(currentMonth);
     displayWeeklyIndicators();
 }
