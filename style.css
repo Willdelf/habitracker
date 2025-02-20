@@ -223,6 +223,21 @@ h1 {
     font-weight: bold;
 }
 
+.chart-container {
+    margin-top: 40px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.chart-container h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
 
 
 
