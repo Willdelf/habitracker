@@ -174,6 +174,85 @@ function toggleHabitList() {
 }
 
 
+function displayHabits() {
+    const habitList = document.getElementById('habitList');
+    habitList.innerHTML = '';
+
+    habits.forEach((habit, index) => {
+        const habitItem = document.createElement('li');
+        habitItem.textContent = habit.name;
+        habitItem.dataset.index = index;
+        habitItem.classList.add('habit-item');
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            deleteHabit(index);
+        });
+
+        habitItem.addEventListener('click', () => {
+            selectHabit(index);
+        });
+
+        habitItem.appendChild(deleteBtn);
+        habitList.appendChild(habitItem);
+    });
+}
+
+function deleteHabit(index) {
+    habits.splice(index, 1);
+    localStorage.setItem('habits', JSON.stringify(habits));
+    displayHabits();
+}
+
+function handleHabitClick(event) {
+    const habitIndex = event.target.dataset.index;
+    if (habitIndex !== undefined) {
+        selectHabit(habitIndex);
+    }
+}
+
+function selectHabit(index) {
+    const selectedHabit = habits[index];
+    if (selectedHabit) {
+        document.querySelectorAll('#habitList li').forEach(item => item.classList.remove('selected'));
+        document.querySelector(`#habitList li[data-index="${index}"]`).classList.add('selected');
+        generateCalendar(currentMonth);
+    }
+}
+
+function getSelectedHabit() {
+    const selectedHabitIndex = [...document.querySelectorAll('#habitList li.selected')].map(item => item.dataset.index)[0];
+    return selectedHabitIndex !== undefined ? habits[selectedHabitIndex] : null;
+}
+
+function toggleDayCompletion(day, month, year) {
+    const selectedHabit = getSelectedHabit();
+    if (!selectedHabit) {
+        alert('Please select a habit first!');
+        return;
+    }
+
+    const dateString = `${month + 1}-${day}-${year}`;
+
+    if (selectedHabit.completedDates.includes(dateString)) {
+        selectedHabit.completedDates = selectedHabit.completedDates.filter(date => date !== dateString);
+    } else {
+        selectedHabit.completedDates.push(dateString);
+    }
+
+    localStorage.setItem('habits', JSON.stringify(habits));
+    generateCalendar(currentMonth);
+}
+
+
+
+
+
+
 
 
 
