@@ -3,18 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habit Tracker</title>
+    <title>Habit Tracker 2025</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Habit Tracker</h1>
-        <div class="habit-list">
-            <!-- Habit items will go here -->
+    <div class="app-container">
+        <h1>Habit Tracker 2025</h1>
+        
+        <div class="month-nav">
+            <button id="prevMonthBtn">Prev Month</button>
+            <span id="currentMonthDisplay">January 2025</span>
+            <button id="nextMonthBtn">Next Month</button>
         </div>
-        <button id="addHabitBtn">Add New Habit</button>
+        
+        <div class="habit-list-container">
+            <h2>Your Habits</h2>
+            <ul id="habitList">
+                <!-- Habit items will go here -->
+            </ul>
+        </div>
+
+        <div class="calendar-container">
+            <h2>Calendar</h2>
+            <div id="calendar" class="calendar">
+                <!-- Calendar will be dynamically generated -->
+            </div>
+        </div>
+
+        <button id="addHabitBtn">Add Habit</button>
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
+
+
+
+

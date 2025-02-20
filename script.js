@@ -1,111 +1,113 @@
-// Initialize habit list from local storage if available
-let habits = JSON.parse(localStorage.getItem('habits')) || [];
+document.addEventListener("DOMContentLoaded", function () {
+    const habitList = document.getElementById("habitList");
+    const calendarContainer = document.querySelector(".calendar-container");
+    const calendar = document.getElementById("calendar");
+    const addHabitBtn = document.getElementById("addHabitBtn");
+    const monthDisplay = document.getElementById("currentMonthDisplay");
+    let habits = [];
+    let activeHabit = null;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
 
-document.getElementById('addHabitBtn').addEventListener('click', addHabit);
+    function renderCalendar() {
+        calendar.innerHTML = "";
+        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            let dayElement = document.createElement("div");
+            dayElement.classList.add("calendar-day");
+            dayElement.textContent = day;
+            
+            if (activeHabit && activeHabit.trackedDays.includes(day)) {
+                dayElement.classList.add("tracked");
+            }
 
-document.addEventListener('DOMContentLoaded', displayHabits);
+            dayElement.addEventListener("click", function () {
+                if (!activeHabit) return;
+                
+                if (activeHabit.trackedDays.includes(day)) {
+                    activeHabit.trackedDays = activeHabit.trackedDays.filter(d => d !== day);
+                } else {
+                    activeHabit.trackedDays.push(day);
+                }
 
-// Add a new habit
-function addHabit() {
-    let habitName = prompt('Enter the name of your new habit:');
-    let reminderTime = prompt('Enter the reminder time (24-hour format, e.g., 14:30 for 2:30 PM):');
-    
-    if (habitName) {
-        // Validate the reminder time format (HH:MM)
-        if (reminderTime && !/^\d{2}:\d{2}$/.test(reminderTime)) {
-            alert('Invalid time format. Please enter time in HH:MM format.');
-            return; // Exit if time format is invalid
+                renderCalendar();
+            });
+
+            calendar.appendChild(dayElement);
         }
+    }
+
+    function updateMonthDisplay() {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    }
+
+    document.getElementById("prevMonthBtn").addEventListener("click", function () {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        updateMonthDisplay();
+        renderCalendar();
+    });
+
+    document.getElementById("nextMonthBtn").addEventListener("click", function () {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        updateMonthDisplay();
+        renderCalendar();
+    });
+
+    addHabitBtn.addEventListener("click", function () {
+        let habitName = prompt("Enter habit name:");
+        if (!habitName) return;
 
         let newHabit = {
             name: habitName,
-            completedDates: [],
-            reminderTime: reminderTime || null
+            trackedDays: []
         };
-
-        // Add to habits array and save to local storage
         habits.push(newHabit);
-        localStorage.setItem('habits', JSON.stringify(habits));
-
-        // If reminder time is set, schedule it
-        if (newHabit.reminderTime) {
-            setReminder(newHabit, habits.length - 1); // Schedule reminder for this habit
-        }
-        
-        displayHabits();
-    }
-}
-
-// Set reminder for a habit
-function setReminder(habit, habitIndex) {
-    if (!habit.reminderTime) return; // Avoid errors if no reminder time is set
-
-    let [hours, minutes] = habit.reminderTime.split(':').map(Number);
-    let now = new Date();
-    let reminderTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-
-    // If the reminder time is already past for today, set it for the next day
-    if (reminderTime <= now) {
-        reminderTime.setDate(reminderTime.getDate() + 1);
-    }
-
-    let timeUntilReminder = reminderTime - now;
-
-    // Ensure the reminder works after calculating the time
-    setTimeout(() => {
-        alert(`Reminder: It's time to do your habit: ${habit.name}`);
-        // After showing the reminder, reschedule it for the next day
-        setReminder(habit, habitIndex);
-    }, timeUntilReminder);
-}
-
-// Mark a habit as done for today
-function markAsDone(habitIndex) {
-    let today = new Date().toLocaleDateString();
-    if (!habits[habitIndex].completedDates.includes(today)) {
-        habits[habitIndex].completedDates.push(today);
-        localStorage.setItem('habits', JSON.stringify(habits));
-    }
-    displayHabits();
-}
-
-// Display all habits
-function displayHabits() {
-    let habitList = document.querySelector('.habit-list');
-    habitList.innerHTML = ''; // Clear existing list
-
-    habits.forEach((habit, index) => {
-        let habitItem = document.createElement('div');
-        habitItem.classList.add('habit-item');
-        
-        let habitText = document.createElement('span');
-        habitText.textContent = habit.name;
-        
-        let markDoneButton = document.createElement('button');
-        markDoneButton.textContent = 'Mark as Done';
-
-        // If habit is completed today, disable the button
-        let today = new Date().toLocaleDateString();
-        if (habit.completedDates.includes(today)) {
-            habitItem.style.backgroundColor = '#d4edda'; // Completed color
-            markDoneButton.disabled = true;
-            markDoneButton.textContent = 'Completed';
-        }
-
-        // Display reminder time if set
-        if (habit.reminderTime) {
-            let reminderText = document.createElement('span');
-            reminderText.textContent = `Reminder set for: ${habit.reminderTime}`;
-            habitItem.appendChild(reminderText);
-        }
-
-        markDoneButton.onclick = () => markAsDone(index);
-
-        habitItem.appendChild(habitText);
-        habitItem.appendChild(markDoneButton);
-        
-        habitList.appendChild(habitItem);
+        renderHabits();
     });
-}
+
+    function renderHabits() {
+        habitList.innerHTML = "";
+
+        habits.forEach((habit, index) => {
+            let habitElement = document.createElement("li");
+            habitElement.classList.add("habit-item");
+            habitElement.textContent = habit.name;
+            
+            if (habit === activeHabit) {
+                habitElement.classList.add("active");
+            }
+
+            habitElement.addEventListener("click", function () {
+                if (activeHabit === habit) {
+                    activeHabit = null;
+                    calendarContainer.style.display = "none";
+                } else {
+                    activeHabit = habit;
+                    calendarContainer.style.display = "block";
+                }
+                renderHabits();
+                renderCalendar();
+            });
+
+            habitList.appendChild(habitElement);
+        });
+    }
+
+    updateMonthDisplay();
+    renderHabits();
+});
+
+
+
 
 
