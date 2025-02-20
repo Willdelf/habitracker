@@ -108,80 +108,6 @@ function displayHabits() {
         const habitItem = document.createElement('li');
         habitItem.textContent = habit.name;
         habitItem.dataset.index = index;
-
-        habitItem.addEventListener('click', () => {
-            selectHabit(index);
-        });
-
-        habitList.appendChild(habitItem);
-    });
-}
-
-function handleHabitClick(event) {
-    const habitIndex = event.target.dataset.index;
-    if (habitIndex !== undefined) {
-        selectHabit(habitIndex);
-    }
-}
-
-function selectHabit(index) {
-    const selectedHabit = habits[index];
-    if (selectedHabit) {
-        const habitList = document.querySelectorAll('#habitList li');
-        habitList.forEach(habitItem => habitItem.classList.remove('selected'));
-        document.querySelector(`#habitList li[data-index="${index}"]`).classList.add('selected');
-        generateCalendar(currentMonth, selectedHabit);
-    }
-}
-
-function getSelectedHabit() {
-    const selectedHabitIndex = [...document.querySelectorAll('#habitList li.selected')].map(item => item.dataset.index)[0];
-    return selectedHabitIndex !== undefined ? habits[selectedHabitIndex] : null;
-}
-
-function toggleDayCompletion(day, month, year) {
-    const selectedHabit = getSelectedHabit();
-    if (!selectedHabit) {
-        alert('Please select a habit first!');
-        return;
-    }
-
-    const dateString = `${month + 1}-${day}-${year}`; // Format: MM-DD-YYYY
-
-    // Toggle the day's completion status
-    if (selectedHabit.completedDates.includes(dateString)) {
-        selectedHabit.completedDates = selectedHabit.completedDates.filter(date => date !== dateString);
-    } else {
-        selectedHabit.completedDates.push(dateString);
-    }
-
-    // Save to localStorage and update the UI
-    localStorage.setItem('habits', JSON.stringify(habits));
-    generateCalendar(currentMonth);
-}
-
-function toggleHabitList() {
-    const habitList = document.getElementById('habitList');
-    const toggleHeading = document.getElementById('habitListToggle');
-
-    if (habitList.style.display === 'none') {
-        habitList.style.display = 'block';
-        toggleHeading.textContent = 'Your Habits';
-    } else {
-        habitList.style.display = 'none';
-        toggleHeading.textContent = 'Your Habits';
-    }
-}
-
-
-function displayHabits() {
-    const habitList = document.getElementById('habitList');
-    habitList.innerHTML = '';
-
-    habits.forEach((habit, index) => {
-        const habitItem = document.createElement('li');
-        habitItem.textContent = habit.name;
-        habitItem.dataset.index = index;
         habitItem.classList.add('habit-item');
 
         // Delete button
@@ -246,6 +172,19 @@ function toggleDayCompletion(day, month, year) {
 
     localStorage.setItem('habits', JSON.stringify(habits));
     generateCalendar(currentMonth);
+}
+
+function toggleHabitList() {
+    const habitList = document.getElementById('habitList');
+    const toggleHeading = document.getElementById('habitListToggle');
+
+    if (habitList.style.display === 'none') {
+        habitList.style.display = 'block';
+        toggleHeading.textContent = 'Your Habits';
+    } else {
+        habitList.style.display = 'none';
+        toggleHeading.textContent = 'Your Habits';
+    }
 }
 
 

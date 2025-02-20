@@ -2,8 +2,9 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
 /* Main Container */
@@ -54,6 +55,12 @@ h1 {
 /* Habit List Container */
 .habit-list-container {
     margin-top: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
 }
 
 .habit-list-container ul {
@@ -70,10 +77,9 @@ h1 {
     cursor: pointer;
     user-select: none;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     transition: color 0.3s ease;
-    justify-content: center;
 }
 
 #habitListToggle:hover {
@@ -81,23 +87,45 @@ h1 {
 }
 
 /* Habit Items */
-.habit-list-container li {
+.habit-item {
     margin: 5px 0;
     padding: 10px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     transition: background-color 0.3s ease;
 }
 
-.habit-list-container li:hover {
+.habit-item:hover {
     background-color: #e9ecef;
 }
 
-.habit-list-container li.selected {
+.habit-item.selected {
     background-color: #007bff;
     color: white;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    color: darkred;
+}
+
+/* Selected Habit */
+.selected {
+    font-weight: bold;
+    background: #d4edda;
 }
 
 /* Add Habit Button */
@@ -121,6 +149,12 @@ h1 {
 /* Calendar Container */
 .calendar-container {
     margin-top: 40px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
 }
 
 .calendar-container h2 {
@@ -187,79 +221,6 @@ h1 {
 .calendar .today {
     background-color: #ffcc00; /* Yellow for today */
     font-weight: bold;
-}
-
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-}
-
-/* Habit List */
-.habit-list-container {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: 20px auto;
-}
-
-.habit-item {
-    list-style: none;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.habit-item:hover {
-    background: #eee;
-}
-
-/* Delete Button */
-.delete-btn {
-    background: none;
-    border: none;
-    color: red;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.delete-btn:hover {
-    color: darkred;
-}
-
-/* Selected Habit */
-.selected {
-    font-weight: bold;
-    background: #d4edda;
-}
-
-/* Calendar Styling */
-.calendar-container {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: 20px auto;
-}
-
-/* Completed Days */
-.done {
-    background-color: #4caf50 !important;
-    color: white;
-}
-
-.not-done {
-    background-color: #f8d7da;
-    color: black;
 }
 
 
