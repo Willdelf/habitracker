@@ -4,19 +4,10 @@ const weeklyResults = JSON.parse(localStorage.getItem('weeklyResults')) || [];
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = [
-    "January", "February", "March", "April", "May", "June",
+    "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
 ];
 let currentMonth = new Date().getMonth(); // Start with the current month
-
-// Modal-related variables
-const modal = document.getElementById('inputModal');
-const modalInput = document.getElementById('modalInput');
-const modalTitle = document.getElementById('modalTitle');
-const saveModalBtn = document.getElementById('saveModalBtn');
-const closeModalBtn = document.getElementById('closeModalBtn');
-
-let modalContext = null; // Tracks what the modal is adding (habit or goal)
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
@@ -34,14 +25,12 @@ function initializeApp() {
 function addEventListeners() {
     document.getElementById('prevMonthBtn').addEventListener('click', showPreviousMonth);
     document.getElementById('nextMonthBtn').addEventListener('click', showNextMonth);
-    document.getElementById('addHabitBtn').addEventListener('click', () => openModal('habit'));
-    document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goal'));
+    document.getElementById('addHabitBtn').addEventListener('click', addHabit);
     document.getElementById('habitList').addEventListener('click', handleHabitClick);
+    document.getElementById('addGoalBtn').addEventListener('click', addGoal);
     document.getElementById('goalList').addEventListener('click', handleGoalClick);
     document.getElementById('habitListToggle').addEventListener('click', toggleHabitList);
     document.getElementById('goalListToggle').addEventListener('click', toggleGoalList);
-    saveModalBtn.addEventListener('click', saveModal);
-    closeModalBtn.addEventListener('click', closeModal);
 }
 
 function generateCalendar(month) {
@@ -126,15 +115,16 @@ function saveModal() {
 
     if (modalContext === 'habit') {
         habits.push({ name: inputValue, completedDates: [] });
-        localStorage.setItem('habits', JSON.stringify(habits));
-        displayHabits();
-    } else if (modalContext === 'goal') {
-        goals.push({ name: inputValue, achieved: false });
-        localStorage.setItem('goals', JSON.stringify(goals));
-        displayGoals();
+    } else {
+        goals.push({ name: inputValue, achieved: false, date: new Date().toISOString() });
     }
 
+    localStorage.setItem('habits', JSON.stringify(habits));
+    localStorage.setItem('goals', JSON.stringify(goals));
     closeModal();
+    displayHabits();
+    displayGoals();
+    displayWeeklyIndicators();
 }
 
 function addHabit() {
@@ -173,6 +163,65 @@ function displayHabits() {
     });
 }
 
+function deleteHabit(index) {
+    habits.splice(index, 1);
+    localStorage.setItem('habits', JSON.stringify(habits));
+    displayHabits();
+}
+
+function handleHabitClick(event) {
+    const habitIndex = event.target.dataset.index;
+    if (habitIndex !== undefined) {
+        selectHabit(habitIndex);
+    }
+}
+
+function selectHabit(index) {
+    const selectedHabit = habits[index];
+    if (selectedHabit) {
+        document.querySelectorAll('#habitList li').forEach(item => item.classList.remove('selected'));
+        document.querySelector(`#habitList li[data-index="${index}"]`).classList.add('selected');
+        generateCalendar(currentMonth);
+    }
+}
+
+function getSelectedHabit() {
+    const selectedHabitIndex = [...document.querySelectorAll('#habitList li.selected')].map(item => item.dataset.index)[0];
+    return selectedHabitIndex !== undefined ? habits[selectedHabitIndex] : null;
+}
+
+function toggleDayCompletion(day, month, year) {
+    const selectedHabit = getSelectedHabit();
+    if (!selectedHabit) {
+        alert('Please select a habit first!');
+        return;
+    }
+
+    const dateString = `${month + 1}-${day}-${year}`;
+
+    if (selectedHabit.completedDates.includes(dateString)) {
+        selectedHabit.completedDates = selectedHabit.completedDates.filter(date => date !== dateString);
+    } else {
+        selectedHabit.completedDates.push(dateString);
+    }
+
+    localStorage.setItem('habits', JSON.stringify(habits));
+    generateCalendar(currentMonth);
+}
+
+function toggleHabitList() {
+    const habitList = document.getElementById('habitList');
+    const toggleHeading = document.getElementById('habitListToggle');
+
+    if (habitList.style.display === 'none') {
+        habitList.style.display = 'block';
+        toggleHeading.textContent = 'Your Habits';
+    } else {
+        habitList.style.display = 'none';
+        toggleHeading.textContent = 'Your Habits';
+    }
+}
+
 function displayGoals() {
     const goalList = document.getElementById('goalList');
     goalList.innerHTML = ''; // Clear existing list
@@ -195,30 +244,151 @@ function displayGoals() {
             deleteGoal(index);
         });
 
+        // Toggle achieved status
+        const toggleAchievedBtn = document.createElement('button');
+        toggleAchievedBtn.textContent = goal.achieved ? 'Mark as Not Achieved' : 'Mark as Achieved';
+        toggleAchievedBtn.classList.add('toggle-achieved-btn');
+        toggleAchievedBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleGoalAchieved(index);
+        });
+
         goalItem.appendChild(deleteBtn);
+        goalItem.appendChild(toggleAchievedBtn);
         goalList.appendChild(goalItem);
     });
 }
 
-function toggleDayCompletion(day, month, year) {
-    const selectedHabit = getSelectedHabit();
-    if (!selectedHabit) {
-        alert('Please select a habit first!');
-        return;
-    }
-
-    const dateString = `${month + 1}-${day}-${year}`;
-    if (selectedHabit.completedDates.includes(dateString)) {
-        selectedHabit.completedDates = selectedHabit.completedDates.filter(date => date !== dateString);
-    } else {
-        selectedHabit.completedDates.push(dateString);
-    }
-
-    localStorage.setItem('habits', JSON.stringify(habits));
-    generateCalendar(currentMonth);
+function deleteGoal(index) {
+    goals.splice(index, 1);
+    localStorage.setItem('goals', JSON.stringify(goals));
+    displayGoals();
+    displayWeeklyIndicators();
 }
 
-// Remaining functions (e.g., `checkAndResetWeeklyGoals`, `displayWeeklyIndicators`) remain unchanged.
+function handleGoalClick(event) {
+    const goalIndex = event.target.dataset.index;
+    if (goalIndex !== undefined) {
+        selectGoal(goalIndex);
+    }
+}
+
+function selectGoal(index) {
+    const selectedGoal = goals[index];
+    if (selectedGoal) {
+        document.querySelectorAll('#goalList li').forEach(item => item.classList.remove('selected'));
+        document.querySelector(`#goalList li[data-index="${index}"]`).classList.add('selected');
+    }
+}
+
+function toggleGoalAchieved(index) {
+    goals[index].achieved = !goals[index].achieved;
+    localStorage.setItem('goals', JSON.stringify(goals));
+    displayGoals();
+    displayWeeklyIndicators();
+}
+
+function toggleGoalList() {
+    const goalList = document.getElementById('goalList');
+    const toggleHeading = document.getElementById('goalListToggle');
+
+    if (goalList.style.display === 'none') {
+        goalList.style.display = 'block';
+        toggleHeading.textContent = 'Your Goals';
+    } else {
+        goalList.style.display = 'none';
+        toggleHeading.textContent = 'Your Goals';
+    }
+}
+
+function displayWeeklyIndicators() {
+    const weeklyIndicatorsTable = document.getElementById('weeklyIndicators');
+    const weeks = getThreeWeeks();
+    const goalsAchievedPerWeek = calculateGoalsAchievedPerWeek(weeks);
+
+    weeklyIndicatorsTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>Week</th>
+                <th>Goals Achieved / Total Goals</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${goalsAchievedPerWeek.map((weekData, index) => `
+                <tr>
+                    <td>${weekData.label}</td>
+                    <td>${weekData.achieved} / ${weekData.total}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+}
+
+function getThreeWeeks() {
+    const currentDate = new Date();
+    const currentWeek = getWeekDates(currentDate);
+    const pastWeek = getWeekDates(new Date(currentDate.setDate(currentDate.getDate() - 7)));
+    const nextWeek = getWeekDates(new Date(currentDate.setDate(currentDate.getDate() + 14)));
+
+    return [
+        { label: 'Past Week', dates: pastWeek },
+        { label: 'Current Week', dates: currentWeek },
+        { label: 'Next Week', dates: nextWeek }
+    ];
+}
+
+function getWeekDates(date) {
+    const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        weekDates.push(new Date(startOfWeek));
+        startOfWeek.setDate(startOfWeek.getDate() + 1);
+    }
+    return weekDates;
+}
+
+function calculateGoalsAchievedPerWeek(weeks) {
+    return weeks.map(week => {
+        const weekGoals = goals.filter(goal => {
+            const goalDate = new Date(goal.date);
+            return week.dates.some(date => date.toDateString() === goalDate.toDateString());
+        });
+        const achievedGoals = weekGoals.filter(goal => goal.achieved).length;
+        return {
+            label: week.label,
+            achieved: achievedGoals,
+            total: weekGoals.length
+        };
+    });
+}
+
+function checkAndResetWeeklyGoals() {
+    const lastResetDate = new Date(localStorage.getItem('lastResetDate'));
+    const currentDate = new Date();
+    const dayOfWeek = currentDate.getDay();
+
+    // If today is Sunday and the last reset was not today, reset the weekly goals
+    if (dayOfWeek === 0 && lastResetDate.toDateString() !== currentDate.toDateString()) {
+        // Record the results of the past week
+        const pastWeekResults = calculateGoalsAchievedPerWeek([{ label: 'Past Week', dates: getWeekDates(new Date(currentDate.setDate(currentDate.getDate() - 7))) }])[0];
+        weeklyResults.push(pastWeekResults);
+        localStorage.setItem('weeklyResults', JSON.stringify(weeklyResults));
+
+        // Reset the goals
+        goals.forEach(goal => {
+            goal.achieved = false;
+        });
+        localStorage.setItem('goals', JSON.stringify(goals));
+        localStorage.setItem('lastResetDate', currentDate.toISOString());
+        displayGoals();
+        displayWeeklyIndicators();
+    }
+}
+
+
+
+
+
 
 
 

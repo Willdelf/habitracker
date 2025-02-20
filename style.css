@@ -1,3 +1,20 @@
+/* CSS Variables for Colors */
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --secondary-color: #f9f9f9;
+    --border-color: #ddd;
+    --text-color: #333;
+    --highlight-color: #add8e6;
+    --done-color: #d4edda;
+    --done-text-color: #155724;
+    --not-done-color: #f8d7da;
+    --not-done-text-color: #721c24;
+    --achieved-color: #add8e6;
+    --delete-color: red;
+    --delete-hover-color: darkred;
+}
+
 /* General Body Styling */
 body {
     font-family: Arial, sans-serif;
@@ -20,7 +37,7 @@ body {
 /* Header */
 h1 {
     text-align: center;
-    color: #333;
+    color: var(--text-color);
 }
 
 /* Month Navigation */
@@ -36,26 +53,26 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
 .month-nav button:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-hover-color);
 }
 
 #currentMonthDisplay {
     font-size: 18px;
     font-weight: bold;
-    color: #333;
+    color: var(--text-color);
 }
 
 /* Habit List Container */
 .habit-list-container {
     margin-top: 20px;
-    background: #fff;
+    background: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -71,7 +88,7 @@ h1 {
 /* Clickable Title */
 #habitListToggle {
     margin-bottom: 10px;
-    color: #333;
+    color: var(--text-color);
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
@@ -83,15 +100,15 @@ h1 {
 }
 
 #habitListToggle:hover {
-    color: #007bff;
+    color: var(--primary-color);
 }
 
 /* Habit Items */
 .habit-item {
     margin: 5px 0;
     padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     cursor: pointer;
     display: flex;
@@ -105,7 +122,7 @@ h1 {
 }
 
 .habit-item.selected {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
 }
 
@@ -113,7 +130,7 @@ h1 {
 .delete-btn {
     background: none;
     border: none;
-    color: red;
+    color: var(--delete-color);
     font-size: 16px;
     cursor: pointer;
     transition: color 0.2s ease, transform 0.2s ease;
@@ -122,14 +139,14 @@ h1 {
 }
 
 .delete-btn:hover {
-    color: darkred;
+    color: var(--delete-hover-color);
     transform: scale(1.2);
 }
 
 /* Selected Habit */
 .selected {
     font-weight: bold;
-    background: #d4edda;
+    background: var(--done-color);
 }
 
 /* Add Habit Button */
@@ -140,20 +157,20 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
 #addHabitBtn:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-hover-color);
 }
 
 /* Calendar Container */
 .calendar-container {
     margin-top: 40px;
-    background: #fff;
+    background: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -163,7 +180,7 @@ h1 {
 
 .calendar-container h2 {
     margin-bottom: 10px;
-    color: #333;
+    color: var(--text-color);
 }
 
 /* Calendar Grid */
@@ -180,15 +197,15 @@ h1 {
     align-items: center;
     justify-content: center;
     padding: 5px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    color: #333;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
 }
 
 .calendar .month-name {
     grid-column: span 7;
     text-align: center;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     font-weight: bold;
     border-radius: 5px;
     padding: 5px;
@@ -213,27 +230,27 @@ h1 {
 
 /* Habit Status Colors */
 .calendar .done {
-    background-color: #d4edda; /* Green for done */
-    color: #155724;
+    background-color: var(--done-color); /* Green for done */
+    color: var(--done-text-color);
     font-weight: bold;
 }
 
 .calendar .not-done {
-    background-color: #f8d7da; /* Red for not done */
-    color: #721c24;
+    background-color: var(--not-done-color); /* Red for not done */
+    color: var(--not-done-text-color);
     font-weight: bold;
 }
 
 /* Highlight Today */
 .calendar .today {
-    background-color: #add8e6; /* Yellow for today */
+    background-color: var(--highlight-color); /* Light blue for today */
     font-weight: bold;
 }
 
 /* Goal List Container */
 .goal-list-container {
     margin-top: 20px;
-    background: #fff;
+    background: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -250,8 +267,8 @@ h1 {
 .goal-item {
     margin: 5px 0;
     padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     cursor: pointer;
     display: flex;
@@ -266,17 +283,17 @@ h1 {
 }
 
 .goal-item.achieved {
-    background-color: #28a745;
+    background-color: var(--achieved-color);
     color: white;
     font-weight: bold;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+    box-shadow: 0 0 5px var(--achieved-shadow-color);
 }
 
 /* Toggle Achieved Button */
 .toggle-achieved-btn {
     background: none;
     border: none;
-    color: #007bff;
+    color: var(--primary-color);
     cursor: pointer;
     transition: color 0.2s ease, transform 0.2s ease;
     width: 150px; /* Fixed width */
@@ -284,7 +301,7 @@ h1 {
 }
 
 .toggle-achieved-btn:hover {
-    color: #0056b3;
+    color: var(--primary-hover-color);
     transform: scale(1.05);
 }
 
@@ -296,20 +313,20 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #addGoalBtn:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-hover-color);
 }
 
 /* Scripture Reminder */
 .scripture-reminder {
     margin-top: 20px;
-    background: #fff;
+    background: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -322,7 +339,7 @@ h1 {
 /* Weekly Indicators Container */
 .weekly-indicators-container {
     margin-top: 20px;
-    background: #fff;
+    background: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -337,24 +354,24 @@ h1 {
 
 .weekly-indicators-container th,
 .weekly-indicators-container td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     padding: 8px;
     text-align: center;
 }
 
 .weekly-indicators-container th {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: white;
 }
 
 .weekly-indicators-container td {
-    background-color: #f9f9f9;
+    background-color: var(--secondary-color);
 }
 
 /* Clickable Title */
 #goalListToggle {
     margin-bottom: 10px;
-    color: #333;
+    color: var(--text-color);
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
@@ -366,7 +383,7 @@ h1 {
 }
 
 #goalListToggle:hover {
-    color: #007bff;
+    color: var(--primary-color);
 }
 
 /* Responsive Design */
@@ -394,7 +411,6 @@ h1 {
         padding: 8px;
     }
 }
-
 
 
 
