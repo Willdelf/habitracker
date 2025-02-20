@@ -1,4 +1,5 @@
 const habits = JSON.parse(localStorage.getItem('habits')) || [];
+const goals = JSON.parse(localStorage.getItem('goals')) || [];
 let currentMonth = new Date().getMonth(); // Start with the current month
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -9,6 +10,7 @@ const months = [
 
 document.addEventListener('DOMContentLoaded', () => {
     displayHabits();
+    displayGoals();
     generateCalendar(currentMonth);
 
     // Existing event listeners
@@ -16,9 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nextMonthBtn').addEventListener('click', showNextMonth);
     document.getElementById('addHabitBtn').addEventListener('click', addHabit);
     document.getElementById('habitList').addEventListener('click', handleHabitClick);
+    document.getElementById('addGoalBtn').addEventListener('click', addGoal);
+    document.getElementById('goalList').addEventListener('click', handleGoalClick);
 
     // New toggle event listener on the heading
     document.getElementById('habitListToggle').addEventListener('click', toggleHabitList);
+    document.getElementById('goalListToggle').addEventListener('click', toggleGoalList);
 });
 
 function generateCalendar(month) {
@@ -184,6 +189,96 @@ function toggleHabitList() {
     } else {
         habitList.style.display = 'none';
         toggleHeading.textContent = 'Your Habits';
+    }
+}
+
+function addGoal() {
+    const goalName = prompt('Enter the name of your new goal:');
+    if (goalName) {
+        const newGoal = {
+            name: goalName,
+            achieved: false // Initially not achieved
+        };
+        goals.push(newGoal);
+        localStorage.setItem('goals', JSON.stringify(goals));
+        displayGoals();
+    }
+}
+
+function displayGoals() {
+    const goalList = document.getElementById('goalList');
+    goalList.innerHTML = ''; // Clear existing list
+
+    goals.forEach((goal, index) => {
+        const goalItem = document.createElement('li');
+        goalItem.textContent = goal.name;
+        goalItem.dataset.index = index;
+        goalItem.classList.add('goal-item');
+        if (goal.achieved) {
+            goalItem.classList.add('achieved');
+        }
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            deleteGoal(index);
+        });
+
+        // Toggle achieved status
+        const toggleAchievedBtn = document.createElement('button');
+        toggleAchievedBtn.textContent = goal.achieved ? 'Mark as Not Achieved' : 'Mark as Achieved';
+        toggleAchievedBtn.classList.add('toggle-achieved-btn');
+        toggleAchievedBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleGoalAchieved(index);
+        });
+
+        goalItem.appendChild(deleteBtn);
+        goalItem.appendChild(toggleAchievedBtn);
+        goalList.appendChild(goalItem);
+    });
+}
+
+function deleteGoal(index) {
+    goals.splice(index, 1);
+    localStorage.setItem('goals', JSON.stringify(goals));
+    displayGoals();
+}
+
+function handleGoalClick(event) {
+    const goalIndex = event.target.dataset.index;
+    if (goalIndex !== undefined) {
+        selectGoal(goalIndex);
+    }
+}
+
+function selectGoal(index) {
+    const selectedGoal = goals[index];
+    if (selectedGoal) {
+        document.querySelectorAll('#goalList li').forEach(item => item.classList.remove('selected'));
+        document.querySelector(`#goalList li[data-index="${index}"]`).classList.add('selected');
+    }
+}
+
+function toggleGoalAchieved(index) {
+    goals[index].achieved = !goals[index].achieved;
+    localStorage.setItem('goals', JSON.stringify(goals));
+    displayGoals();
+}
+
+function toggleGoalList() {
+    const goalList = document.getElementById('goalList');
+    const toggleHeading = document.getElementById('goalListToggle');
+
+    if (goalList.style.display === 'none') {
+        goalList.style.display = 'block';
+        toggleHeading.textContent = 'Your Goals';
+    } else {
+        goalList.style.display = 'none';
+        toggleHeading.textContent = 'Your Goals';
     }
 }
 
