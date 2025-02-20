@@ -1,109 +1,194 @@
-/* Minimalist style */
+/* General Body Styling */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    color: #333;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
+/* Main Container */
 .app-container {
-    background: white;
+    max-width: 900px;
+    margin: 20px auto;
     padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
 }
 
+/* Header */
 h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
+    text-align: center;
+    color: #333;
 }
 
+/* Month Navigation */
 .month-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 15px 0;
+    margin-bottom: 20px;
 }
 
-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 8px 15px;
+.month-nav button {
+    padding: 10px 15px;
+    font-size: 16px;
     cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
     border-radius: 5px;
-    transition: background 0.3s;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #2980b9;
+.month-nav button:hover {
+    background-color: #0056b3;
 }
 
-.habit-list-container {
-    margin-bottom: 15px;
-}
-
-.habit-list-container h2 {
+#currentMonthDisplay {
     font-size: 18px;
-    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
 }
 
-#habitList {
+/* Habit List Container */
+.habit-list-container {
+    margin-top: 20px;
+}
+
+.habit-list-container ul {
     list-style: none;
     padding: 0;
 }
 
-.habit-item {
-    background: #ecf0f1;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 5px;
+/* Clickable Title */
+#habitListToggle {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.3s ease;
 }
 
-.habit-item.active {
-    background: #3498db;
+#habitListToggle:hover {
+    color: #007bff;
+    
+}
+
+/* Habit Items */
+.habit-list-container li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.habit-list-container li:hover {
+    background-color: #e9ecef;
+}
+
+.habit-list-container li.selected {
+    background-color: #007bff;
     color: white;
 }
 
-.calendar-container {
-    display: none; /* Initially hidden */
-    margin-top: 15px;
+/* Add Habit Button */
+#addHabitBtn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
+#addHabitBtn:hover {
+    background-color: #218838;
+}
+
+/* Calendar Container */
+.calendar-container {
+    margin-top: 40px;
+}
+
+.calendar-container h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Calendar Grid */
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
+    grid-auto-rows: 40px;
 }
 
-.calendar-day {
-    background: #ecf0f1;
-    padding: 10px;
-    border-radius: 5px;
+.calendar div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.calendar .month-name {
+    grid-column: span 7;
     text-align: center;
-    cursor: pointer;
-    transition: background 0.3s;
+    background-color: #ffcc00;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px;
 }
 
-.calendar-day.tracked {
-    background: #2ecc71;
-    color: white;
-}
-
-#addHabitBtn {
+/* Day Buttons */
+.calendar button {
     width: 100%;
-    margin-top: 10px;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
 }
+
+.calendar button:hover {
+    background-color: #f1f1f1;
+}
+
+/* Habit Status Colors */
+.calendar .done {
+    background-color: #d4edda; /* Green for done */
+    color: #155724;
+    font-weight: bold;
+}
+
+.calendar .not-done {
+    background-color: #f8d7da; /* Red for not done */
+    color: #721c24;
+    font-weight: bold;
+}
+
+/* Highlight Today */
+.calendar .today {
+    background-color: #ffcc00; /* Yellow for today */
+    font-weight: bold;
+}
+
 
 
 

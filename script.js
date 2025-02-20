@@ -1,111 +1,178 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const habitList = document.getElementById("habitList");
-    const calendarContainer = document.querySelector(".calendar-container");
-    const calendar = document.getElementById("calendar");
-    const addHabitBtn = document.getElementById("addHabitBtn");
-    const monthDisplay = document.getElementById("currentMonthDisplay");
-    let habits = [];
-    let activeHabit = null;
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
+const habits = JSON.parse(localStorage.getItem('habits')) || [];
+let currentMonth = 0; // Starts from January
+const year = 2025;
+const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+];
 
-    function renderCalendar() {
-        calendar.innerHTML = "";
-        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        
-        for (let day = 1; day <= daysInMonth; day++) {
-            let dayElement = document.createElement("div");
-            dayElement.classList.add("calendar-day");
-            dayElement.textContent = day;
-            
-            if (activeHabit && activeHabit.trackedDays.includes(day)) {
-                dayElement.classList.add("tracked");
-            }
+document.addEventListener('DOMContentLoaded', () => {
+    displayHabits();
+    generateCalendar(currentMonth);
 
-            dayElement.addEventListener("click", function () {
-                if (!activeHabit) return;
-                
-                if (activeHabit.trackedDays.includes(day)) {
-                    activeHabit.trackedDays = activeHabit.trackedDays.filter(d => d !== day);
-                } else {
-                    activeHabit.trackedDays.push(day);
-                }
+    // Existing event listeners
+    document.getElementById('prevMonthBtn').addEventListener('click', showPreviousMonth);
+    document.getElementById('nextMonthBtn').addEventListener('click', showNextMonth);
+    document.getElementById('addHabitBtn').addEventListener('click', addHabit);
+    document.getElementById('habitList').addEventListener('click', handleHabitClick);
 
-                renderCalendar();
-            });
+    // New toggle event listener on the heading
+    document.getElementById('habitListToggle').addEventListener('click', toggleHabitList);
+});
 
-            calendar.appendChild(dayElement);
+function generateCalendar(month) {
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = ''; // Clear existing calendar
+
+    const monthName = months[month];
+    const monthHeader = document.createElement('div');
+    monthHeader.classList.add('month-name');
+    monthHeader.textContent = `${monthName} ${year}`;
+    calendar.appendChild(monthHeader);
+
+    // Create the days of the week
+    daysOfWeek.forEach(day => {
+        const dayOfWeek = document.createElement('div');
+        dayOfWeek.textContent = day;
+        calendar.appendChild(dayOfWeek);
+    });
+
+    // Empty space before the first day of the month
+    const startDay = firstDayOfMonth.getDay();
+    for (let i = 0; i < startDay; i++) {
+        calendar.appendChild(document.createElement('div'));
+    }
+
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayButton = document.createElement('button');
+        dayButton.textContent = day;
+
+        const dateString = `${month + 1}-${day}-${year}`;
+        let habitStatus = 'not-done';
+
+        const selectedHabit = getSelectedHabit();
+        if (selectedHabit && selectedHabit.completedDates.includes(dateString)) {
+            habitStatus = 'done';
         }
+
+        dayButton.classList.add(habitStatus);
+        dayButton.addEventListener('click', () => toggleDayCompletion(day, month, year)); // Attach click event
+        calendar.appendChild(dayButton);
     }
 
-    function updateMonthDisplay() {
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-    }
+    document.getElementById('currentMonthDisplay').textContent = `${monthName} ${year}`;
+}
 
-    document.getElementById("prevMonthBtn").addEventListener("click", function () {
+function showPreviousMonth() {
+    if (currentMonth > 0) {
         currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        updateMonthDisplay();
-        renderCalendar();
-    });
+    } else {
+        currentMonth = 11; // Loop back to December
+    }
+    generateCalendar(currentMonth);
+}
 
-    document.getElementById("nextMonthBtn").addEventListener("click", function () {
+function showNextMonth() {
+    if (currentMonth < 11) {
         currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        updateMonthDisplay();
-        renderCalendar();
-    });
+    } else {
+        currentMonth = 0; // Loop back to January
+    }
+    generateCalendar(currentMonth);
+}
 
-    addHabitBtn.addEventListener("click", function () {
-        let habitName = prompt("Enter habit name:");
-        if (!habitName) return;
-
-        let newHabit = {
+function addHabit() {
+    const habitName = prompt('Enter the name of your new habit:');
+    if (habitName) {
+        const newHabit = {
             name: habitName,
-            trackedDays: []
+            completedDates: [] // Empty array for completed dates
         };
         habits.push(newHabit);
-        renderHabits();
-    });
+        localStorage.setItem('habits', JSON.stringify(habits));
+        displayHabits();
+    }
+}
 
-    function renderHabits() {
-        habitList.innerHTML = "";
+function displayHabits() {
+    const habitList = document.getElementById('habitList');
+    habitList.innerHTML = ''; // Clear existing list
 
-        habits.forEach((habit, index) => {
-            let habitElement = document.createElement("li");
-            habitElement.classList.add("habit-item");
-            habitElement.textContent = habit.name;
-            
-            if (habit === activeHabit) {
-                habitElement.classList.add("active");
-            }
+    habits.forEach((habit, index) => {
+        const habitItem = document.createElement('li');
+        habitItem.textContent = habit.name;
+        habitItem.dataset.index = index;
 
-            habitElement.addEventListener("click", function () {
-                if (activeHabit === habit) {
-                    activeHabit = null;
-                    calendarContainer.style.display = "none";
-                } else {
-                    activeHabit = habit;
-                    calendarContainer.style.display = "block";
-                }
-                renderHabits();
-                renderCalendar();
-            });
-
-            habitList.appendChild(habitElement);
+        habitItem.addEventListener('click', () => {
+            selectHabit(index);
         });
+
+        habitList.appendChild(habitItem);
+    });
+}
+
+function handleHabitClick(event) {
+    const habitIndex = event.target.dataset.index;
+    if (habitIndex !== undefined) {
+        selectHabit(habitIndex);
+    }
+}
+
+function selectHabit(index) {
+    const selectedHabit = habits[index];
+    if (selectedHabit) {
+        const habitList = document.querySelectorAll('#habitList li');
+        habitList.forEach(habitItem => habitItem.classList.remove('selected'));
+        document.querySelector(`#habitList li[data-index="${index}"]`).classList.add('selected');
+        generateCalendar(currentMonth, selectedHabit);
+    }
+}
+
+function getSelectedHabit() {
+    const selectedHabitIndex = [...document.querySelectorAll('#habitList li.selected')].map(item => item.dataset.index)[0];
+    return selectedHabitIndex !== undefined ? habits[selectedHabitIndex] : null;
+}
+
+function toggleDayCompletion(day, month, year) {
+    const selectedHabit = getSelectedHabit();
+    if (!selectedHabit) {
+        alert('Please select a habit first!');
+        return;
     }
 
-    updateMonthDisplay();
-    renderHabits();
-});
+    const dateString = `${month + 1}-${day}-${year}`; // Format: MM-DD-YYYY
+
+    // Toggle the day's completion status
+    if (selectedHabit.completedDates.includes(dateString)) {
+        selectedHabit.completedDates = selectedHabit.completedDates.filter(date => date !== dateString);
+    } else {
+        selectedHabit.completedDates.push(dateString);
+    }
+
+    // Save to localStorage and update the UI
+    localStorage.setItem('habits', JSON.stringify(habits));
+    generateCalendar(currentMonth);
+}
+
+function toggleHabitList() {
+    const habitList = document.getElementById('habitList');
+    const toggleHeading = document.getElementById('habitListToggle');
+
+    if (habitList.style.display === 'none') {
+        habitList.style.display = 'block';
+        toggleHeading.textContent = 'Your Habits';
+    } else {
+        habitList.style.display = 'none';
+        toggleHeading.textContent = 'Your Habits';
+    }
+}
+
 
 
 
