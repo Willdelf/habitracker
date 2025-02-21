@@ -98,41 +98,17 @@ function showNextMonth() {
     displayWeeklyIndicators();
 }
 
-function openModal(context) {
-    modalContext = context;
-    modalTitle.textContent = context === 'habit' ? 'Add New Habit' : 'Add New Goal';
-    modalInput.value = '';
-    modal.style.display = 'flex';
-}
-
-function closeModal() {
-    modal.style.display = 'none';
-}
-
-function saveModal() {
-    const inputValue = modalInput.value.trim();
-    if (!inputValue) return alert('Please enter a name!');
-
-    if (modalContext === 'habit') {
-        habits.push({ name: inputValue, completedDates: [] });
-    } else {
-        goals.push({ name: inputValue, achieved: false, date: new Date().toISOString() });
-    }
-
-    localStorage.setItem('habits', JSON.stringify(habits));
-    localStorage.setItem('goals', JSON.stringify(goals));
-    closeModal();
-    displayHabits();
-    displayGoals();
-    displayWeeklyIndicators();
-}
-
 function addHabit() {
-    openModal('habit');
-}
-
-function addGoal() {
-    openModal('goal');
+    const habitName = prompt('Enter the name of your new habit:');
+    if (habitName) {
+        const newHabit = {
+            name: habitName,
+            completedDates: [] // Empty array for completed dates
+        };
+        habits.push(newHabit);
+        localStorage.setItem('habits', JSON.stringify(habits));
+        displayHabits();
+    }
 }
 
 function displayHabits() {
@@ -219,6 +195,21 @@ function toggleHabitList() {
     } else {
         habitList.style.display = 'none';
         toggleHeading.textContent = 'Your Habits';
+    }
+}
+
+function addGoal() {
+    const goalName = prompt('Enter the name of your new goal:');
+    if (goalName) {
+        const newGoal = {
+            name: goalName,
+            achieved: false, // Initially not achieved
+            date: new Date().toISOString() // Set the current date
+        };
+        goals.push(newGoal);
+        localStorage.setItem('goals', JSON.stringify(goals));
+        displayGoals();
+        displayWeeklyIndicators();
     }
 }
 
