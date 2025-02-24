@@ -1,5 +1,6 @@
 const habits = JSON.parse(localStorage.getItem('habits')) || [];
 const goals = JSON.parse(localStorage.getItem('goals')) || [];
+const achievedGoals = JSON.parse(localStorage.getItem('achievedGoals')) || [];
 const weeklyResults = JSON.parse(localStorage.getItem('weeklyResults')) || [];
 const year = 2025;
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -273,8 +274,13 @@ function selectGoal(index) {
 }
 
 function toggleGoalAchieved(index) {
-    goals[index].achieved = !goals[index].achieved;
+    if (!goals[index].achieved) {
+        goals[index].achieved = true;
+        achievedGoals.push(goals[index]); // Move to achieved goals
+        deleteGoal(index); // Immediately delete the goal from the list
+    }
     localStorage.setItem('goals', JSON.stringify(goals));
+    localStorage.setItem('achievedGoals', JSON.stringify(achievedGoals));
     displayGoals();
     displayWeeklyIndicators();
 }
@@ -340,14 +346,14 @@ function getWeekDates(date) {
 
 function calculateGoalsAchievedPerWeek(weeks) {
     return weeks.map(week => {
-        const weekGoals = goals.filter(goal => {
+        const weekGoals = [...goals, ...achievedGoals].filter(goal => {
             const goalDate = new Date(goal.date);
             return week.dates.some(date => date.toDateString() === goalDate.toDateString());
         });
-        const achievedGoals = weekGoals.filter(goal => goal.achieved).length;
+        const achievedGoalsCount = weekGoals.filter(goal => goal.achieved).length;
         return {
             label: week.label,
-            achieved: achievedGoals,
+            achieved: achievedGoalsCount,
             total: weekGoals.length
         };
     });
@@ -375,6 +381,9 @@ function checkAndResetWeeklyGoals() {
         displayWeeklyIndicators();
     }
 }
+
+
+
 
 
 
